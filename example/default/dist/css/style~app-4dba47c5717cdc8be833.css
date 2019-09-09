@@ -1,0 +1,21 @@
+h1 {
+  color: red;
+  display: flex; }
+
+::-webkit-input-placeholder {
+  color: gray; }
+
+::-moz-placeholder {
+  color: gray; }
+
+:-ms-input-placeholder {
+  color: gray; }
+
+::-ms-input-placeholder {
+  color: gray; }
+
+::placeholder {
+  color: gray; }
+
+
+/*# sourceMappingURL=style~app-4dba47c5717cdc8be833.css.map*/
