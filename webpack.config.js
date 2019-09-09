@@ -20,33 +20,10 @@ if ( NODE_ENV == 'server' || NODE_ENV == 'development' ) {
 
 const splitChunksName = [];
 
-function createHtml () {
-    return ['app', 'app2'].map( page => {
-        return new HtmlWebpackPlugin( {
-            template: `./example/react/src/${page}.html`,
-            filename: path.resolve( __dirname, `./example/react/dist/html/${page}.html` ),
-            chunks: [`${page}`],
-            // inject: false,
-            xhtml: true
-        } )
-    } );
-}
-
-const initWebpackConfig = async () => {
+const initWebpackConfig = () => {
     return {
         mode: "development",
         devtool: 'source-map',
-        entry: {
-            app: './example/react/src/app.js',
-            app2: './example/react/src/app2.js',
-            // 'react-runtime': ['react', 'react-dom'],
-        },
-        output: {
-            filename: 'js/[name]-[chunkhash].js',
-            publicPath: 'https://imgcdn50.zuzuche.com/static/',
-            path: DIST_PATH,
-            crossOriginLoading: 'anonymous'
-        },
         devServer: {
             host,
             allowedHosts: [
@@ -220,10 +197,6 @@ const initWebpackConfig = async () => {
                 filename: 'css/[name]-[contenthash].css',
                 chunkFilename: 'css/[name]-[contenthash].css'
             } ),
-            // ...createHtml(),
-            // new InjectHtmlWebpackPlugin({
-            //     htmlDir: './example/react/src'
-            // })
         ]
     };
 }

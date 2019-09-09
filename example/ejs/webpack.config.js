@@ -8,7 +8,7 @@ const baseConfig = require('../../webpack.config');
 function createHtml () {
     return ['app', 'app2'].map( page => {
         return new HtmlWebpackPlugin( {
-            template: `./example/default/src/${page}.html`,
+            template: `./example/ejs/src/${page}.html`,
             filename: path.resolve( __dirname, `./dist/html/${page}.html` ),
             chunks: [`${page}`],
             // inject: false,
@@ -18,8 +18,8 @@ function createHtml () {
 }
 
 baseConfig.entry= {
-    app: './example/default/src/app.js',
-    app2: './example/default/src/app2.js',
+    app: './example/ejs/src/app.js',
+    app2: './example/ejs/src/app2.js',
 }
 baseConfig.output= {
     filename: 'js/[name]-[chunkhash].js',
@@ -28,8 +28,7 @@ baseConfig.output= {
     crossOriginLoading: 'anonymous'
 }
 baseConfig.plugins.push(...(createHtml()), new InjectHtmlWebpackPlugin({
-    htmlDir: './example/default/src',
-    inject: true
+    htmlDir: './example/ejs/src'
 }) );
 
 
