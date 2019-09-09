@@ -1,7 +1,7 @@
 const path = require( 'path' );
 const HtmlWebpackPlugin = require( 'html-webpack-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
-const InjectHtmlWebpackPlugin = require('./index');
+const InjectHtmlWebpackPlugin = require( './index' );
 const ip = require( 'ip' );
 const fs = require( 'fs' );
 const host = ip.address().toString();
@@ -44,6 +44,10 @@ const initWebpackConfig = () => {
         module: {
             rules: [
                 {
+                    test: /\.(hbs|handlebars)$/,
+                    loader: 'handlebars-loader'
+                },
+                {
                     test: /\.js|jsx?$/,
                     exclude: /(node_modules|bower_components)/,
                     use: {
@@ -55,12 +59,12 @@ const initWebpackConfig = () => {
                                     {
                                         "targets": {
                                             browsers: [ // 浏览器
-                                                'Chrome >= 45', 
+                                                'Chrome >= 45',
                                                 'last 2 Firefox versions',
                                                 'ie >= 10',
-                                                 'Edge >= 12',
-                                                'iOS >= 9', 
-                                                'Android >= 4', 
+                                                'Edge >= 12',
+                                                'iOS >= 9',
+                                                'Android >= 4',
                                                 'last 2 ChromeAndroid versions'
                                             ]
                                         },

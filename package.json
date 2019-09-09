@@ -10,7 +10,8 @@
     "server": "node config/server.config.js",
     "test": "NODE_ENV=development webpack --config webpack.config.js",
     "default": "NODE_ENV=development webpack --config ./example/default/webpack.config.js",
-    "ejs": "NODE_ENV=development webpack --config ./example/ejs/webpack.config.js"
+    "ejs": "NODE_ENV=development webpack --config ./example/ejs/webpack.config.js",
+    "hbs": "NODE_ENV=development webpack --config ./example/hbs/webpack.config.js"
   },
   "repository": {
     "type": "git",

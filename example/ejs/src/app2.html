@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8">
     <title>Webpack App</title>
-    <% htmlWebpackPlugin.files.css.forEach(function(file){ %>
+    <% assets.css.forEach(function(file){ %>
       <%= file %>
     <% }); %>
   </head>
   <body>
   <div id='root'></div>
-  <% htmlWebpackPlugin.files.js.forEach(function(file){ %>
+  <% assets.js.forEach(function(file){ %>
     <%= file %>
   <% }); %>
   </body>

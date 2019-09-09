@@ -46,9 +46,6 @@ class InjectHtmlWebpackPlugin {
             manifest: assets.manifest,
             favicon: assets.favicon,
         };
-        console.log( 'assets', assets )
-        // console.log('assetTags',assetTags)
-        // console.log('options',options)
 
         // 循坏每一个tag进行属性的扩展
         injectIndexKeys.forEach( ( key ) => {
@@ -73,15 +70,19 @@ class InjectHtmlWebpackPlugin {
         // 不用默认注入将使用ejs模板语法进行注入
         assets = !inject ? newAssets : assets;
 
+        // 官方这样返回，但是先简略处理
+        // return {
+        //     compilation: compilation,
+        //     webpackConfig: compilation.options,
+        //     htmlWebpackPlugin: {
+        //         tags: assetTags,
+        //         files: assets,
+        //         options: options
+        //     }
+        // };
         return {
-            compilation: compilation,
-            webpackConfig: compilation.options,
-            htmlWebpackPlugin: {
-                tags: assetTags,
-                files: assets,
-                options: options
-            }
-        };
+            assets
+        }
     }
 
     apply ( compiler ) {
@@ -95,8 +96,6 @@ class InjectHtmlWebpackPlugin {
                 data.plugin.options.templateParameters = ( compilation, assets, assetTags, options ) => {
                     return this.templateParametersGenerator( compilation, assets, assetTags, options );
                 }
-
-
 
                 cb( null, data );
             } );
