@@ -11,7 +11,8 @@
     "test": "NODE_ENV=development webpack --config webpack.config.js",
     "default": "NODE_ENV=development webpack --config ./example/default/webpack.config.js",
     "ejs": "NODE_ENV=development webpack --config ./example/ejs/webpack.config.js",
-    "hbs": "NODE_ENV=development webpack --config ./example/hbs/webpack.config.js"
+    "hbs": "NODE_ENV=development webpack --config ./example/hbs/webpack.config.js",
+    "inline": "NODE_ENV=development webpack --config ./example/inline/webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "@babel/preset-env": "7.5.5",
     "@babel/preset-react": "7.0.0",
     "@babel/runtime-corejs3": "7.5.5",
+    "@eagleeye-jssdk/loader": "^1.6.0",
     "autoprefixer": "9.6.1",
     "babel-loader": "8.0.6",
     "css-loader": "3.2.0",

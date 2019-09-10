@@ -1,6 +1,6 @@
 const HtmlWebpackPlugin = require( 'html-webpack-plugin' );
 const htmlTags = require( 'html-webpack-plugin/lib/html-tags' );
-const { isString, isArray } = require( './lib/utils/typeof' );
+const { isString, isArray, isObject } = require( './lib/utils/typeof' );
 const path = require( 'path' );
 
 const PLUGIN_NAME = 'InjectHtmlWebpackPlugin';
@@ -19,19 +19,18 @@ class InjectHtmlWebpackPlugin {
         }
     }
 
-    createNewAssetsObject(assets, item, xhtml) {
+    createNewAssetsObject ( assets, item, xhtml ) {
         const tagName = item.tagName;
-        const extName = tagName == 'link' ? path.extname(item.attributes.href).replace('.', '') : path.extname(item.attributes.src).replace('.', '');
+        const extName = tagName == 'link' ? path.extname( item.attributes.href ).replace( '.', '' ) : path.extname( item.attributes.src ).replace( '.', '' );
         const htmlStr = htmlTags.htmlTagObjectToString( item, xhtml );
-        if ( !assets[extName] || !isArray(assets[extName]) ) {
+        if ( !assets[extName] || !isArray( assets[extName] ) ) {
             assets[extName] = [htmlStr];
         } else {
-            assets[extName].push(htmlStr)
+            assets[extName].push( htmlStr )
         }
     }
 
     templateParametersGenerator ( compilation, assets, assetTags, options ) {
-
         const _self = this;
         options.inject = _self.options.inject;
 
@@ -59,7 +58,7 @@ class InjectHtmlWebpackPlugin {
                 }
 
                 // 不使用默认注入那么将生成script和link标签进行构建并保存到变量中
-                !inject && _self.createNewAssetsObject(newAssets, item, xhtml);
+                !inject && _self.createNewAssetsObject( newAssets, item, xhtml );
 
             } );
 
@@ -86,12 +85,39 @@ class InjectHtmlWebpackPlugin {
     }
 
     apply ( compiler ) {
+
+        compiler.hooks.beforeRun.tapAsync( PLUGIN_NAME, (compilation, cb) => {
+            // console.log(compilation);
+            // 获取entry，将inline移除，并保持内容
+            const entrys = compilation.options.entry;
+            const regex = /\?__inline/;
+
+            if ( isArray(entrys) ) {
+                compilation.options.entry = entrys.map((item, key) => {
+                    if (!regex.test(item)) {
+                        return item;
+                    }
+                })
+            } else if ( isString(entrys) ) {
+                if ( regex.test(entrys[entry]) ) {
+                    compilation.options.entry = '';
+                }
+            } else if ( isObject(entrys) ) {
+                const entryKeys = Object.keys(entrys);
+                entryKeys.forEach(entry => {
+                    if ( regex.test(entrys[entry]) ) {
+                        delete entrys[entry];
+                    }
+                })
+            }
+            console.log(compilation.options.entry)
+            cb(null, compilation);
+        } );
+
         compiler.hooks.compilation.tap( PLUGIN_NAME, ( compilation ) => {
             const hooks = HtmlWebpackPlugin.getHooks( compilation );
+            // 修改templateParametersGenerator，返回构建好的每个页面所关联的资源注入模板变量
             hooks.beforeAssetTagGeneration.tapAsync( PLUGIN_NAME, ( data, cb ) => {
-                // data.plugin.options.templateParameters = {
-                //     'foo': 'bar'
-                // }
                 // 重写templateParameters，在最后输出前替换
                 data.plugin.options.templateParameters = ( compilation, assets, assetTags, options ) => {
                     return this.templateParametersGenerator( compilation, assets, assetTags, options );
@@ -99,6 +125,7 @@ class InjectHtmlWebpackPlugin {
 
                 cb( null, data );
             } );
+
         } );
     }
 }

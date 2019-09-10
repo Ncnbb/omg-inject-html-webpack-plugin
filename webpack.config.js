@@ -180,6 +180,12 @@ const initWebpackConfig = () => {
                         chunks: 'initial',
                         priority: 10,
                     },
+                    ea: {
+                        name: 'ea',
+                        test: /node_modules\/@eagleeye-jssdk/,
+                        chunks: 'initial',
+                        priority: 15,
+                    },
                     vendors: {
                         test: /[\\/]node_modules[\\/]/,
                         name: ( module, chunks, cacheGroupKey ) => {

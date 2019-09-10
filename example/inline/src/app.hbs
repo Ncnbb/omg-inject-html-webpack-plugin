@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Webpack App</title>
+  {{> './tpl/head.handlebars'}}
+
+  {{#each assets.css}}
+    {{{this}}}
+  {{/each}}
+</head>
+
+<body>
+  <div id='root'></div>
+  {{#each assets.js}}
+    {{{this}}}
+  {{/each}}
+</body>
+
+</html>
