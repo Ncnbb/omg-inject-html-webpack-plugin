@@ -6,6 +6,12 @@
 - webpack - 4.x
 - html-webpack-plugin - 4.0.0-beta.8
 
+### 安装
+
+```shell
+npm install inject-html-webpack-plugin2 --save-dev
+```
+
 ### 基本使用
 
 ```JavaScript

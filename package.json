@@ -1,11 +1,17 @@
 {
-  "name": "inject-html-webpack-plugin",
-  "version": "1.0.0",
+  "name": "inject-html-webpack-plugin2",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "directories": {
     "example": "example"
   },
+  "files": [
+	  "index.js",
+    "lib",
+    "README.md",
+    "package.json"
+	],
   "scripts": {
     "server": "node config/server.config.js",
     "test": "NODE_ENV=development webpack --config webpack.config.js",
