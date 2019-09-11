@@ -5,16 +5,16 @@
   <meta charset="UTF-8">
   <title>Webpack App</title>
   {{> './tpl/head.handlebars'}}
-
+  {{{inline.eaentry}}}
   {{#each assets.css}}
-    {{{this}}}
+  {{{this}}}
   {{/each}}
 </head>
 
 <body>
   <div id='root'></div>
   {{#each assets.js}}
-    {{{this}}}
+  {{{this}}}
   {{/each}}
 </body>
 

@@ -2,21 +2,18 @@ const HtmlWebpackPlugin = require( 'html-webpack-plugin' );
 const htmlTags = require( 'html-webpack-plugin/lib/html-tags' );
 const { isString, isArray, isObject } = require( './lib/utils/typeof' );
 const path = require( 'path' );
+const fs = require( 'fs' );
 
 const PLUGIN_NAME = 'InjectHtmlWebpackPlugin';
 
 class InjectHtmlWebpackPlugin {
     constructor( options ) {
         const defaultOptions = {
-            htmlDir: null,
             inject: false, // 默认将会关闭html-webpack-plugin的inject
-            test: /(\.view\.html)|\.html/
         };
         this.options = Object.assign( defaultOptions, options );
-
-        if ( this.options.htmlDir && isString( this.options.htmlDir ) ) {
-            this.options.htmlDir = path.resolve( process.cwd(), this.options.htmlDir );
-        }
+        this.cwd = process.cwd();
+        this.inlineFileContent = {};
     }
 
     createNewAssetsObject ( assets, item, xhtml ) {
@@ -33,6 +30,20 @@ class InjectHtmlWebpackPlugin {
     templateParametersGenerator ( compilation, assets, assetTags, options ) {
         const _self = this;
         options.inject = _self.options.inject;
+
+        // 如果开启默认inject，那么将不会进行任何操作
+        if ( options.inject ) {
+            // 官方这样返回，但是先简略处理
+            return {
+                compilation: compilation,
+                webpackConfig: compilation.options,
+                htmlWebpackPlugin: {
+                    tags: assetTags,
+                    files: assets,
+                    options: options
+                }
+            };
+        }
 
         const xhtml = options.xhtml;
         const inject = options.inject;
@@ -65,53 +76,44 @@ class InjectHtmlWebpackPlugin {
             // 重写assets，将assets转为构建后的html字段
             assetTags[key] = newTags;
         } );
-
-        // 不用默认注入将使用ejs模板语法进行注入
-        assets = !inject ? newAssets : assets;
-
-        // 官方这样返回，但是先简略处理
-        // return {
-        //     compilation: compilation,
-        //     webpackConfig: compilation.options,
-        //     htmlWebpackPlugin: {
-        //         tags: assetTags,
-        //         files: assets,
-        //         options: options
-        //     }
-        // };
         return {
-            assets
+            assets: newAssets,
+            inline: { ...this.inlineFileContent }
         }
     }
 
     apply ( compiler ) {
 
-        compiler.hooks.beforeRun.tapAsync( PLUGIN_NAME, (compilation, cb) => {
+        compiler.hooks.beforeRun.tapAsync( PLUGIN_NAME, ( compilation, cb ) => {
             // console.log(compilation);
             // 获取entry，将inline移除，并保持内容
+            // 只有入口文件是object形式才可使用
             const entrys = compilation.options.entry;
             const regex = /\?__inline/;
 
-            if ( isArray(entrys) ) {
-                compilation.options.entry = entrys.map((item, key) => {
-                    if (!regex.test(item)) {
-                        return item;
-                    }
-                })
-            } else if ( isString(entrys) ) {
-                if ( regex.test(entrys[entry]) ) {
-                    compilation.options.entry = '';
-                }
-            } else if ( isObject(entrys) ) {
-                const entryKeys = Object.keys(entrys);
-                entryKeys.forEach(entry => {
-                    if ( regex.test(entrys[entry]) ) {
+            if ( isObject( entrys ) ) {
+                const entryKeys = Object.keys( entrys );
+                entryKeys.forEach( entry => {
+                    if ( regex.test( entrys[entry] ) ) {
+                        const [file, ext] = entrys[entry].split( '?' );
+                        let filePath = '';
+                        if ( file[0] != '/' || file[0] != '.' ) {
+                            filePath = path.join( this.cwd, './node_modules', file );
+                        } else {
+                            filePath = path.join( this.cwd, file );
+                        }
+
+                        const exists = fs.existsSync( filePath );
+                        if ( exists ) {
+                            const content = fs.readFileSync( filePath, 'utf8' );
+                            this.inlineFileContent[entry] = content;
+                        }
                         delete entrys[entry];
+
                     }
-                })
+                } )
             }
-            console.log(compilation.options.entry)
-            cb(null, compilation);
+            cb( null, compilation );
         } );
 
         compiler.hooks.compilation.tap( PLUGIN_NAME, ( compilation ) => {
