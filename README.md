@@ -8,7 +8,7 @@
 
 ### 基本使用
 
-```javascript
+```JavaScript
 {
     plugins: [
         new HtmlWebpackPlugin( {
@@ -26,7 +26,7 @@
 ### 在webpack配置中配置资源跨域
 
 在webpack配置对资源进行跨域配置，最终也可以注入到模板变量的script和link标签中
-```json
+```JavaScript
 {
     output: {
         crossOriginLoading: 'anonymous'
@@ -43,7 +43,7 @@
 
 ### 例子
 
-```javascript
+```JavaScript
 {
     entry： {
         app: './example/inline/src/app.js',
@@ -72,7 +72,7 @@
 
 那么实际上会生成一个这样的对象注入模板，
 
-```json
+```JavaScript
 app模板属性
 { 
     js: [ 
@@ -154,7 +154,7 @@ handlebars
  - 建议只对node_modules中的包进行inline
  - inline会直接读取文件内容进行注入，并不会注入经过webpack编译的代码
 
-```javascript
+```JavaScript
 {
     entry： {
         app: './example/inline/src/app.js',
