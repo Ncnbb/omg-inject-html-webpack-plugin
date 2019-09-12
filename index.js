@@ -106,7 +106,7 @@ class InjectHtmlWebpackPlugin {
                         const exists = fs.existsSync( filePath );
                         if ( exists ) {
                             const content = fs.readFileSync( filePath, 'utf8' );
-                            this.inlineFileContent[entry] = content;
+                            this.inlineFileContent[entry] = `<script>${content}</script>`;
                         }
                         delete entrys[entry];
 
