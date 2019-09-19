@@ -27,6 +27,36 @@ class InjectHtmlWebpackPlugin {
         }
     }
 
+    createInlineStaticObject ( compilation ) {
+        const entrys = compilation.options.entry;
+        const regex = /\?__inline/;
+        if ( isObject( entrys ) ) {
+            const entryKeys = Object.keys( entrys );
+            entryKeys.forEach( entry => {
+
+                let target = entrys[entry];
+                // build情况下target是字符串，server下是数组
+                target = isArray(target) ? target[1] : target;
+
+                if ( regex.test( target ) ) {
+                    const [file, ext] = target.split( '?' );
+                    let filePath = '';
+                    if ( file[0] != '/' || file[0] != '.' ) {
+                        filePath = path.join( this.cwd, './node_modules', file );
+                    } else {
+                        filePath = path.join( this.cwd, file );
+                    }
+
+                    const exists = fs.existsSync( filePath );
+                    if ( exists ) {
+                        const content = fs.readFileSync( filePath, 'utf8' );
+                        this.inlineFileContent[entry] = `<script>${content}</script>`;
+                    }
+                }
+            } )
+        }
+    }
+
     templateParametersGenerator ( compilation, assets, assetTags, options ) {
         const _self = this;
         options.inject = _self.options.inject;
@@ -84,37 +114,37 @@ class InjectHtmlWebpackPlugin {
 
     apply ( compiler ) {
 
-        compiler.hooks.beforeRun.tapAsync( PLUGIN_NAME, ( compilation, cb ) => {
-            // console.log(compilation);
-            // 获取entry，将inline移除，并保持内容
-            // 只有入口文件是object形式才可使用
-            const entrys = compilation.options.entry;
-            const regex = /\?__inline/;
+        // compiler.hooks.beforeRun.tapAsync( PLUGIN_NAME, ( compilation, cb ) => {
+        //     // console.log(compilation);
+        //     // 获取entry，将inline移除，并保持内容
+        //     // 只有入口文件是object形式才可使用
+        //     const entrys = compilation.options.entry;
+        //     const regex = /\?__inline/;
+        //     console.log( entrys )
+        //     if ( isObject( entrys ) ) {
+        //         const entryKeys = Object.keys( entrys );
+        //         entryKeys.forEach( entry => {
+        //             if ( regex.test( entrys[entry] ) ) {
+        //                 const [file, ext] = entrys[entry].split( '?' );
+        //                 let filePath = '';
+        //                 if ( file[0] != '/' || file[0] != '.' ) {
+        //                     filePath = path.join( this.cwd, './node_modules', file );
+        //                 } else {
+        //                     filePath = path.join( this.cwd, file );
+        //                 }
 
-            if ( isObject( entrys ) ) {
-                const entryKeys = Object.keys( entrys );
-                entryKeys.forEach( entry => {
-                    if ( regex.test( entrys[entry] ) ) {
-                        const [file, ext] = entrys[entry].split( '?' );
-                        let filePath = '';
-                        if ( file[0] != '/' || file[0] != '.' ) {
-                            filePath = path.join( this.cwd, './node_modules', file );
-                        } else {
-                            filePath = path.join( this.cwd, file );
-                        }
+        //                 const exists = fs.existsSync( filePath );
+        //                 if ( exists ) {
+        //                     const content = fs.readFileSync( filePath, 'utf8' );
+        //                     this.inlineFileContent[entry] = `<script>${content}</script>`;
+        //                 }
+        //                 delete entrys[entry];
 
-                        const exists = fs.existsSync( filePath );
-                        if ( exists ) {
-                            const content = fs.readFileSync( filePath, 'utf8' );
-                            this.inlineFileContent[entry] = `<script>${content}</script>`;
-                        }
-                        delete entrys[entry];
-
-                    }
-                } )
-            }
-            cb( null, compilation );
-        } );
+        //             }
+        //         } )
+        //     }
+        //     cb( null, compilation );
+        // } );
 
         compiler.hooks.compilation.tap( PLUGIN_NAME, ( compilation ) => {
             const hooks = HtmlWebpackPlugin.getHooks( compilation );
@@ -122,6 +152,7 @@ class InjectHtmlWebpackPlugin {
             hooks.beforeAssetTagGeneration.tapAsync( PLUGIN_NAME, ( data, cb ) => {
                 // 重写templateParameters，在最后输出前替换
                 data.plugin.options.templateParameters = ( compilation, assets, assetTags, options ) => {
+                    this.createInlineStaticObject( compilation )
                     return this.templateParametersGenerator( compilation, assets, assetTags, options );
                 }
 

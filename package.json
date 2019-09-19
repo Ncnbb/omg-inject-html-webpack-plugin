@@ -1,6 +1,6 @@
 {
   "name": "inject-html-webpack-plugin2",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -18,7 +18,8 @@
     "default": "NODE_ENV=development webpack --config ./example/default/webpack.config.js",
     "ejs": "NODE_ENV=development webpack --config ./example/ejs/webpack.config.js",
     "hbs": "NODE_ENV=development webpack --config ./example/hbs/webpack.config.js",
-    "inline": "NODE_ENV=development webpack --config ./example/inline/webpack.config.js"
+    "inline": "NODE_ENV=development webpack --config ./example/inline/webpack.config.js",
+    "inline-s": "NODE_ENV=development webpack-dev-server --config ./example/inline/webpack.config.js"
   },
   "repository": {
     "type": "git",

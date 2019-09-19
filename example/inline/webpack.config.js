@@ -23,13 +23,33 @@ baseConfig.entry= {
 }
 baseConfig.output= {
     filename: 'js/[name]-[chunkhash].js',
-    publicPath: 'https://imgcdn50.zuzuche.com/static/',
+    publicPath: '/',
     path: DIST_PATH,
     crossOriginLoading: 'anonymous'
 }
 baseConfig.plugins.push(...(createHtml()), new InjectHtmlWebpackPlugin({
     htmlDir: './example/inline/src'
 }) );
+
+// baseConfig.devServer = {
+//     headers: {
+//         'Access-Control-Allow-Origin': '*',
+//         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+//         'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
+//     },
+//     disableHostCheck: true,
+//     setup: (app, Server) => {
+    
+//         // 首页模板
+//         app.get(/\/html\./, function (request, response) {
+//             const fileContent = readFile('home', Server, 'book');
+//             // 获取服务器渲染后的html文件字符串
+//             getHomeHtml(request, response, fileContent, userLog.cookie, (html) => {
+//                 response.send(html);
+//             });
+//         });
+//     }
+// },
 
 
 module.exports = baseConfig;
