@@ -1,5 +1,5 @@
 {
-  "name": "inject-html-webpack-plugin2",
+  "name": "omg-inject-html-webpack-plugin",
   "version": "1.1.0",
   "description": "",
   "main": "index.js",
@@ -18,19 +18,19 @@
     "default": "NODE_ENV=development webpack --config ./example/default/webpack.config.js",
     "ejs": "NODE_ENV=development webpack --config ./example/ejs/webpack.config.js",
     "hbs": "NODE_ENV=development webpack --config ./example/hbs/webpack.config.js",
-    "inline": "NODE_ENV=development webpack --config ./example/inline/webpack.config.js",
+    "inline": "NODE_ENV=production webpack --config ./example/inline/webpack.config.js",
     "inline-s": "NODE_ENV=development webpack-dev-server --config ./example/inline/webpack.config.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LLLLLamHo/InjectHtmlWebpackPlugin.git"
+    "url": "git+https://github.com/Ncnbb/omg-inject-html-webpack-plugin.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/LLLLLamHo/InjectHtmlWebpackPlugin/issues"
+    "url": "https://github.com/Ncnbb/omg-inject-html-webpack-plugin/issues"
   },
-  "homepage": "https://github.com/LLLLLamHo/InjectHtmlWebpackPlugin#readme",
+  "homepage": "https://github.com/Ncnbb/omg-inject-html-webpack-plugin#readme",
   "dependencies": {
     "html-webpack-plugin": "4.0.0-beta.8"
   },
