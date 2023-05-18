@@ -116,7 +116,8 @@ class OmgInjectHtmlWebpackPlugin {
         } );
         return {
             assets: newAssets,
-            inline: { ...this.inlineFileContent }
+            inline: { ...this.inlineFileContent },
+            ..._self.options.templateParameters
         }
     }
 
