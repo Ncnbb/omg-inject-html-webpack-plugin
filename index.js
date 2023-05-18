@@ -4,9 +4,11 @@ const { isString, isArray, isObject } = require( './lib/utils/typeof' );
 const path = require( 'path' );
 const fs = require( 'fs' );
 
-const PLUGIN_NAME = 'InjectHtmlWebpackPlugin';
+const PLUGIN_NAME = 'omg-inject-html-webpack-plugin';
 
-class InjectHtmlWebpackPlugin {
+const cacheContent = {};
+
+class OmgInjectHtmlWebpackPlugin {
     constructor( options ) {
         const defaultOptions = {
             inject: false, // 默认将会关闭html-webpack-plugin的inject
@@ -27,7 +29,7 @@ class InjectHtmlWebpackPlugin {
         }
     }
 
-    createInlineStaticObject ( compilation ) {
+    createInlineStaticObject ( compilation, cb ) {
         const entrys = compilation.options.entry;
         const regex = /\?__inline/;
         if ( isObject( entrys ) ) {
@@ -36,7 +38,7 @@ class InjectHtmlWebpackPlugin {
 
                 let target = entrys[entry];
                 // build情况下target是字符串，server下是数组
-                target = isArray(target) ? target[1] : target;
+                target = isArray(target) ? target[target.length - 1] : target;
 
                 if ( regex.test( target ) ) {
                     const [file, ext] = target.split( '?' );
@@ -47,14 +49,20 @@ class InjectHtmlWebpackPlugin {
                         filePath = path.join( this.cwd, file );
                     }
 
-                    const exists = fs.existsSync( filePath );
-                    if ( exists ) {
-                        const content = fs.readFileSync( filePath, 'utf8' );
-                        this.inlineFileContent[entry] = `<script>${content}</script>`;
+                    if ( cacheContent[filePath] ) {
+                        this.inlineFileContent[entry] = `<script>${cacheContent[filePath]}</script>`;
+                    } else {
+                        const exists = fs.existsSync( filePath );
+                        if ( exists ) {
+                            const content = fs.readFileSync( filePath, 'utf8' );
+                            this.inlineFileContent[entry] = `<script>${content}</script>`;
+                            cacheContent[filePath] = content;
+                        }
                     }
                 }
             } )
         }
+        return cb();
     }
 
     templateParametersGenerator ( compilation, assets, assetTags, options ) {
@@ -152,8 +160,9 @@ class InjectHtmlWebpackPlugin {
             hooks.beforeAssetTagGeneration.tapAsync( PLUGIN_NAME, ( data, cb ) => {
                 // 重写templateParameters，在最后输出前替换
                 data.plugin.options.templateParameters = ( compilation, assets, assetTags, options ) => {
-                    this.createInlineStaticObject( compilation )
-                    return this.templateParametersGenerator( compilation, assets, assetTags, options );
+                    return this.createInlineStaticObject( compilation, () => {
+                        return this.templateParametersGenerator( compilation, assets, assetTags, options )
+                    } )
                 }
 
                 cb( null, data );
@@ -163,4 +172,4 @@ class InjectHtmlWebpackPlugin {
     }
 }
 
-module.exports = InjectHtmlWebpackPlugin;
+module.exports = OmgInjectHtmlWebpackPlugin;
